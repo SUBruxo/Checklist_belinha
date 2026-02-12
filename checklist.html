@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist da Bolsa</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1a002b,#2b0040);
+  margin:0;
+  padding:20px;
+  color:#eee;
+}
+
+.container{
+  max-width:950px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:24px;
+  border-radius:20px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 40px rgba(140,0,255,0.25);
+}
+
+h1{text-align:center;margin-bottom:4px;}
+.subtitle{text-align:center;opacity:.7;}
+
+.category{margin-top:28px;}
+
+.category h2{
+  background:rgba(140,0,255,0.25);
+  padding:10px 14px;
+  border-radius:12px;
+}
+
+ul{list-style:none;padding:0;}
+
+li{
+  padding:12px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  margin-bottom:10px;
+  transition:.2s;
+}
+
+li:hover{
+  box-shadow:0 0 12px rgba(170,0,255,.6);
+}
+
+.done{
+  border-color:#9d6cff;
+  background:rgba(157,108,255,.12);
+}
+
+.notdone{
+  border-color:#ff6cd9;
+  background:rgba(255,108,217,.12);
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.choices{display:flex;gap:10px;}
+
+.choice-btn{
+  padding:6px 12px;
+  border-radius:20px;
+  cursor:pointer;
+  background:rgba(255,255,255,.08);
+  transition:.2s;
+}
+
+.choice-btn:hover{
+  background:rgba(255,255,255,.15);
+}
+
+.progress-box{
+  margin-top:20px;
+  padding:14px;
+  border-radius:12px;
+  background:rgba(255,255,255,.05);
+}
+
+.progress-bar{
+  height:18px;
+  background:rgba(255,255,255,.08);
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,#b86cff,#ff6cd9);
+  width:0%;
+  transition:.4s;
+}
+
+.finish-btn{
+  margin-top:30px;
+  background:linear-gradient(90deg,#b86cff,#ff6cd9);
+  border:none;
+  padding:14px 26px;
+  font-size:18px;
+  border-radius:30px;
+  cursor:pointer;
+  color:white;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  box-shadow:0 0 16px rgba(200,0,255,.6);
+}
+
+.final-message{
+  position:fixed;
+  inset:0;
+  background:rgba(10,0,20,.95);
+  color:#fff;
+  font-size:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  opacity:0;
+  pointer-events:none;
+  transition:.4s;
+}
+
+.final-message.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 600px) {
+
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .category h2 {
+    font-size: 18px;
+  }
+
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .choices {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .choice-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .finish-btn {
+    width: 100%;
+    font-size: 20px;
+    padding: 16px;
+  }
+
+  .final-message {
+    font-size: 28px;
+    padding: 20px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Checklist da Bolsa 👜</h1>
+<p class="subtitle">Clique para marcar ou desmarcar</p>
+
+<div id="container"></div>
+
+<div class="progress-box">
+<strong id="progressText"></strong>
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+</div>
+
+<button id="finishBtn" class="finish-btn">
+Concluído ✔️
+</button>
+
+</div>
+
+<div id="finalMessage" class="final-message">
+JJ ama vc ❤️
+</div>
+
+<script>
+const data = [
+
+{
+category:"Roupas",
+items:[
+"Blusas leves (5)",
+"Blusas de sair (2)",
+"Blusas para molhar (2)",
+"Shorts confortáveis (4)",
+"Shorts de sair (2)",
+"Shorts de academia (1)",
+"Todas as calcinhas",
+"Sutiãs (2)",
+"Top (1)",
+"Biquínis (até 4)",
+"Pijamas (7 dias)"
+]
+},
+
+{
+category:"Acessórios",
+items:[
+"Carteira com documentos",
+"Carregador",
+"Boné",
+"Lenços (2)",
+"Cordões",
+"Anéis",
+"Bracelete",
+"Meias"
+]
+},
+
+{
+category:"Cosméticos / Higiene",
+items:[
+"Itens de skincare",
+"Cremes",
+"Esfoliante",
+"Gilete",
+"Absorvente",
+"Desodorante",
+"Perfume"
+]
+},
+
+{
+category:"Remédios",
+items:[
+"Remédios em uso",
+"Remédio de cólica",
+"Remédios extras"
+]
+},
+
+{
+category:"Extras",
+items:[
+"Tablet + carregador",
+"Coisas de unha"
+]
+}
+
+];
+
+const KEY="checklist_viagem";
+const saved=JSON.parse(localStorage.getItem(KEY))||{};
+
+const container=document.getElementById("container");
+const progressText=document.getElementById("progressText");
+const progressFill=document.getElementById("progressFill");
+
+function toggle(id,value){
+if(saved[id]===value){
+delete saved[id];
+}else{
+saved[id]=value;
+}
+localStorage.setItem(KEY,JSON.stringify(saved));
+render();
+}
+
+function render(){
+container.innerHTML="";
+
+let total=0;
+let done=0;
+
+data.forEach(cat=>{
+const div=document.createElement("div");
+div.className="category";
+
+const h2=document.createElement("h2");
+h2.textContent=cat.category;
+div.appendChild(h2);
+
+const ul=document.createElement("ul");
+
+cat.items.forEach(item=>{
+total++;
+
+const status=saved[item];
+if(status==="done") done++;
+
+const li=document.createElement("li");
+if(status==="done") li.classList.add("done");
+if(status==="notdone") li.classList.add("notdone");
+
+const row=document.createElement("div");
+row.className="row";
+
+const text=document.createElement("div");
+text.textContent=item;
+
+const choices=document.createElement("div");
+choices.className="choices";
+
+const yes=document.createElement("div");
+yes.className="choice-btn";
+yes.textContent="Coloquei ✅";
+yes.onclick=()=>toggle(item,"done");
+
+const no=document.createElement("div");
+no.className="choice-btn";
+no.textContent="Não coloquei ❌";
+no.onclick=()=>toggle(item,"notdone");
+
+choices.appendChild(yes);
+choices.appendChild(no);
+
+row.appendChild(text);
+row.appendChild(choices);
+li.appendChild(row);
+ul.appendChild(li);
+});
+
+div.appendChild(ul);
+container.appendChild(div);
+});
+
+const percent=Math.round((done/total)*100);
+progressText.textContent=
+`${done} de ${total} itens prontos (${percent}%)`;
+progressFill.style.width=percent+"%";
+}
+
+render();
+
+document
+.getElementById("finishBtn")
+.addEventListener("click",()=>{
+document
+.getElementById("finalMessage")
+.classList.add("show");
+});
+</script>
+</body>
+</html>
